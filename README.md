@@ -6,6 +6,8 @@ The script implements this model.
 
 > Firstly the space structure of set pair information granule can be divided into positive granule, negative granule, different granule, which were similar and slightly different with three regions of generalized three-way decision. The three kinds of information granules in set pair information granule space were built based on certain positive degree, negative degree and different degree. Secondly, according to the given threshold, set pair information granule is divided into mutually disjointing positive region, negative region and different region.
 
+[![Build Status](https://travis-ci.org/Zeroto521/twd.svg?branch=master)](https://travis-ci.org/Zeroto521/twd)
+
 ## Prerequisites
 
 -   `numpy`
