@@ -23,6 +23,6 @@ print("accuracy score >> {:.1f}%".format(score*100))
 
 """Result
 y true label >>> ['1' '1' '1' '0' '1' '1' '1' '1' '0' '0']
-y predicted label >>> ['1' '1' '1' '0' '1' '1' '1' '1' '0' '0']
-accuracy score >> 100.0%
+y predicted label >>> ['1' '1' '1' '0' '1' '1' '1' '0' '0' '0']
+accuracy score >> 90.0%
 """
