@@ -28,7 +28,7 @@ __short_description__ = 'twd means Model of three-way decision'
 
 
 class TWD():
-    def __init__(self, Lambda=.6, Gamma=.15, PP=0, BP=25, NP=5, PN=10, BN=100, NN=0):
+    def __init__(self, Lambda=.6, Gamma=.15, PP=0, BP=25, NP=5, PN=10, BN=100, NN=0, a='1', b='-', c='0'):
         """twd means Model of three-way decision.
 
         twd
@@ -56,6 +56,9 @@ class TWD():
             PN {int} -- (default: {10})
             BN {int} -- (default: {100})
             NN {int} -- (default: {0})
+            a {str} -- (default: {'1'})
+            b {str} -- (default: {'-'})
+            c {str} -- (default: {'0'})
         """
 
         self.Lambda = Lambda
@@ -67,13 +70,18 @@ class TWD():
         self.BN = BN
         self.NN = NN
 
+        # define the flag make the model more universal
+        self.a = a
+        self.b = b
+        self.c = c
+
     def _relevant_degree_helper(self, x_train, x_pred):
         a, c = 0, 0
 
         for i, j in zip(x_train, x_pred):
             a += 1 if i == j else 0
 
-            if (i == '0' and j == '1') or (i == '1' and j == '0'):
+            if (i == self.c and j == self.a) or (i == self.a and j == self.c):
                 c += 1
 
         a /= len(x_pred)
@@ -123,56 +131,54 @@ class TWD():
 
         return p_s, n_s, p_o, n_o, ab
 
+    def _check_set(self, s):
+        if self.a in s:
+            xk = self.a
+        elif self.c in s:
+            xk = self.c
+        else:
+            xk = self.b
+
+        return xk
+
+    def _check_equal(self, r1, r2, r3):
+        rs = min(r1, r2, r3)
+        if r1 == rs:
+            xk = self.a
+        elif r2 == rs:
+            xk = self.c
+        else:
+            xk = self.b
+
+        return xk
+
     def _decide(self, y_train, bpd, bnd, S, O, U, I, D):
         i_set = set(y_train[I])
         d_set = set(y_train[D])
         index = np.arange(len(y_train))
-        X = index[np.where(y_train == '1')]
-        anti_X = index[np.where(y_train != '1')]
+        X = index[np.where(y_train == self.a)]
+        anti_X = index[np.where(y_train != self.a)]
 
         if bpd < bnd:
             if len(d_set) == 1:
-                if '0' in d_set:
-                    xk = '1'
-                elif '1' in d_set:
-                    xk = '0'
-                else:
-                    xk = '-'
+                xk = self._check_set(d_set)
             else:
                 _, _, r1, r2, r3 = self._loss(S, O, U, X, anti_X)
-                rs = min(r1, r2, r3)
-                if r1 == rs:
-                    xk = '1'
-                elif r2 == rs:
-                    xk = '0'
-                else:
-                    xk = '-'
+                xk = self._check_equal(r1, r2, r3)
         elif bpd > bnd:
             if len(i_set) == 1:
-                if '0' in i_set:
-                    xk = '0'
-                elif '1' in i_set:
-                    xk = '1'
-                else:
-                    xk = '0'
+                xk = self._check_set(i_set)
             else:
                 r1, r2, _, _, r3 = self._loss(S, O, U, X, anti_X)
-                rs = min(r1, r2, r3)
-                if r2 == rs:
-                    xk = '0'
-                elif r1 == rs:
-                    xk = '1'
-                else:
-                    xk = '-'
+                xk = self._check_equal(r1, r2, r3)
         else:
-            if (len(i_set) == 1 and len(d_set) == 1 and
-                    (('1' in i_set and '0' in d_set) or ('0' in d_set and '1' in i_set))):
-                if '1' in i_set:
-                    xk = '1'
+            if len(i_set) == 1 and len(d_set) == 1 and set((self.a, self.c)) == (i_set | d_set):
+                if self.a in i_set:
+                    xk = self.a
                 else:
-                    xk = '0'
+                    xk = self.c
             else:
-                xk = '-'
+                xk = self.b
 
         return xk
 
