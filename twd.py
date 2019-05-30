@@ -56,6 +56,9 @@ class TWD():
             PN {int} -- (default: {10})
             BN {int} -- (default: {100})
             NN {int} -- (default: {0})
+            a {str} -- (default: {'1'})
+            b {str} -- (default: {'-'})
+            c {str} -- (default: {'0'})
         """
 
         self.Lambda = Lambda
@@ -128,6 +131,27 @@ class TWD():
 
         return p_s, n_s, p_o, n_o, ab
 
+    def _check_set(self, s):
+        if self.a in s:
+            xk = self.a
+        elif self.c in s:
+            xk = self.c
+        else:
+            xk = self.b
+
+        return xk
+
+    def _check_equal(self, r1, r2, r3):
+        rs = min(r1, r2, r3)
+        if r1 == rs:
+            xk = self.a
+        elif r2 == rs:
+            xk = self.c
+        else:
+            xk = self.b
+
+        return xk
+
     def _decide(self, y_train, bpd, bnd, S, O, U, I, D):
         i_set = set(y_train[I])
         d_set = set(y_train[D])
@@ -137,43 +161,18 @@ class TWD():
 
         if bpd < bnd:
             if len(d_set) == 1:
-                if self.a in d_set:
-                    xk = self.a
-                elif self.c in d_set:
-                    xk = self.c
-                else:
-                    xk = self.b
+                xk = self._check_set(d_set)
             else:
                 _, _, r1, r2, r3 = self._loss(S, O, U, X, anti_X)
-                rs = min(r1, r2, r3)
-                if r1 == rs:
-                    xk = self.a
-                elif r2 == rs:
-                    xk = self.c
-                else:
-                    xk = self.b
+                xk = self._check_equal(r1, r2, r3)
         elif bpd > bnd:
             if len(i_set) == 1:
-                if self.a in i_set:
-                    xk = self.a
-                elif self.c in i_set:
-                    xk = self.c
-                else:
-                    xk = self.b
+                xk = self._check_set(i_set)
             else:
                 r1, r2, _, _, r3 = self._loss(S, O, U, X, anti_X)
-                rs = min(r1, r2, r3)
-                if r1 == rs:
-                    xk = self.a
-                elif r2 == rs:
-                    xk = self.c
-                else:
-                    xk = self.b
+                xk = self._check_equal(r1, r2, r3)
         else:
-            length_flag = len(i_set) == 1 and len(d_set) == 1
-            exist_flag = (
-                (self.a in i_set and self.c in d_set) or (self.c in d_set and self.a in i_set))
-            if length_flag and exist_flag:
+            if len(i_set) == 1 and len(d_set) == 1 and set((self.a, self.c)) == (i_set | d_set):
                 if self.a in i_set:
                     xk = self.a
                 else:
