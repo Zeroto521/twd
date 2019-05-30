@@ -28,7 +28,7 @@ __short_description__ = 'twd means Model of three-way decision'
 
 
 class TWD():
-    def __init__(self, Lambda=.6, Gamma=.15, PP=0, BP=25, NP=5, PN=10, BN=100, NN=0):
+    def __init__(self, Lambda=.6, Gamma=.15, PP=0, BP=25, NP=5, PN=10, BN=100, NN=0, a=self.a, b=self.b, c=self.c):
         """twd means Model of three-way decision.
 
         twd
@@ -67,13 +67,18 @@ class TWD():
         self.BN = BN
         self.NN = NN
 
+        # define the flag make the model more universal
+        self.a = a
+        self.b = b
+        self.c = c
+
     def _relevant_degree_helper(self, x_train, x_pred):
         a, c = 0, 0
 
         for i, j in zip(x_train, x_pred):
             a += 1 if i == j else 0
 
-            if (i == '0' and j == '1') or (i == '1' and j == '0'):
+            if (i == self.c and j == self.a) or (i == self.a and j == self.c):
                 c += 1
 
         a /= len(x_pred)
@@ -127,52 +132,54 @@ class TWD():
         i_set = set(y_train[I])
         d_set = set(y_train[D])
         index = np.arange(len(y_train))
-        X = index[np.where(y_train == '1')]
-        anti_X = index[np.where(y_train != '1')]
+        X = index[np.where(y_train == self.a)]
+        anti_X = index[np.where(y_train != self.a)]
 
         if bpd < bnd:
             if len(d_set) == 1:
-                if '0' in d_set:
-                    xk = '1'
-                elif '1' in d_set:
-                    xk = '0'
+                if self.c in d_set:
+                    xk = self.a
+                elif self.a in d_set:
+                    xk = self.c
                 else:
-                    xk = '-'
+                    xk = self.b
             else:
                 _, _, r1, r2, r3 = self._loss(S, O, U, X, anti_X)
                 rs = min(r1, r2, r3)
                 if r1 == rs:
-                    xk = '1'
+                    xk = self.a
                 elif r2 == rs:
-                    xk = '0'
+                    xk = self.c
                 else:
-                    xk = '-'
+                    xk = self.b
         elif bpd > bnd:
             if len(i_set) == 1:
-                if '0' in i_set:
-                    xk = '0'
-                elif '1' in i_set:
-                    xk = '1'
+                if self.c in i_set:
+                    xk = self.c
+                elif self.a in i_set:
+                    xk = self.a
                 else:
-                    xk = '0'
+                    xk = self.c
             else:
                 r1, r2, _, _, r3 = self._loss(S, O, U, X, anti_X)
                 rs = min(r1, r2, r3)
                 if r2 == rs:
-                    xk = '0'
+                    xk = self.c
                 elif r1 == rs:
-                    xk = '1'
+                    xk = self.a
                 else:
-                    xk = '-'
+                    xk = self.b
         else:
-            if (len(i_set) == 1 and len(d_set) == 1 and
-                    (('1' in i_set and '0' in d_set) or ('0' in d_set and '1' in i_set))):
-                if '1' in i_set:
-                    xk = '1'
+            length_flag = len(i_set) == 1 and len(d_set) == 1
+            exist_flag = (
+                (self.a in i_set and self.c in d_set) or (self.c in d_set and self.a in i_set))
+            if length_flag and exist_flag:
+                if self.a in i_set:
+                    xk = self.a
                 else:
-                    xk = '0'
+                    xk = self.c
             else:
-                xk = '-'
+                xk = self.b
 
         return xk
 
