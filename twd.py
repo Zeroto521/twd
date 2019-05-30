@@ -137,10 +137,10 @@ class TWD():
 
         if bpd < bnd:
             if len(d_set) == 1:
-                if self.c in d_set:
-                    xk = self.c
-                elif self.a in d_set:
+                if self.a in d_set:
                     xk = self.a
+                elif self.c in d_set:
+                    xk = self.c
                 else:
                     xk = self.b
             else:
@@ -154,19 +154,19 @@ class TWD():
                     xk = self.b
         elif bpd > bnd:
             if len(i_set) == 1:
-                if self.c in i_set:
-                    xk = self.c
-                elif self.a in i_set:
+                if self.a in i_set:
                     xk = self.a
+                elif self.c in i_set:
+                    xk = self.c
                 else:
                     xk = self.b
             else:
                 r1, r2, _, _, r3 = self._loss(S, O, U, X, anti_X)
                 rs = min(r1, r2, r3)
-                if r2 == rs:
-                    xk = self.c
-                elif r1 == rs:
+                if r1 == rs:
                     xk = self.a
+                elif r2 == rs:
+                    xk = self.c
                 else:
                     xk = self.b
         else:
