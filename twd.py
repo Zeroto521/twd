@@ -28,7 +28,7 @@ __short_description__ = 'twd means Model of three-way decision'
 
 
 class TWD():
-    def __init__(self, Lambda=.6, Gamma=.15, PP=0, BP=25, NP=5, PN=10, BN=100, NN=0, a=self.a, b=self.b, c=self.c):
+    def __init__(self, Lambda=.6, Gamma=.15, PP=0, BP=25, NP=5, PN=10, BN=100, NN=0, a='1', b='-', c='0'):
         """twd means Model of three-way decision.
 
         twd
