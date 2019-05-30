@@ -159,7 +159,7 @@ class TWD():
                 elif self.a in i_set:
                     xk = self.a
                 else:
-                    xk = self.c
+                    xk = self.b
             else:
                 r1, r2, _, _, r3 = self._loss(S, O, U, X, anti_X)
                 rs = min(r1, r2, r3)
