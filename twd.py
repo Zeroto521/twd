@@ -138,9 +138,9 @@ class TWD():
         if bpd < bnd:
             if len(d_set) == 1:
                 if self.c in d_set:
-                    xk = self.a
-                elif self.a in d_set:
                     xk = self.c
+                elif self.a in d_set:
+                    xk = self.a
                 else:
                     xk = self.b
             else:
