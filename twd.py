@@ -173,10 +173,7 @@ class TWD():
                 xk = self._check_equal(r1, r2, r3)
         else:
             if len(i_set) == 1 and len(d_set) == 1 and set((self.a, self.c)) == (i_set | d_set):
-                if self.a in i_set:
-                    xk = self.a
-                else:
-                    xk = self.c
+                xk = self.a if self.a in i_set else self.c
             else:
                 xk = self.b
 
@@ -195,13 +192,9 @@ class TWD():
         I = index[np.where(rdegrees[:, 0] == bpd)]  # 最大正同类
         D = index[np.where(rdegrees[:, -1] == bnd)]  # 最大负反类
 
-        Xk = self._decide(y_train, bpd, bnd, S, O, U, I, D)
-
-        return Xk
+        return self._decide(y_train, bpd, bnd, S, O, U, I, D)
 
     def predict(self, x_train, y_train, x_pred):
-        Xks = np.apply_along_axis(
+        return np.apply_along_axis(
             self._predict, 1, x_pred,
             x_train=x_train, y_train=y_train)
-
-        return Xks

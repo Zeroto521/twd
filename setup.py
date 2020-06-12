@@ -72,7 +72,7 @@ try:
     REQUIRES = [i.strip() for i in f.readlines()]
 except:
     print("'requirements.txt' not found!")
-    REQUIRES = list()
+    REQUIRES = []
 
 setuptools.setup(
     name=NAME,
